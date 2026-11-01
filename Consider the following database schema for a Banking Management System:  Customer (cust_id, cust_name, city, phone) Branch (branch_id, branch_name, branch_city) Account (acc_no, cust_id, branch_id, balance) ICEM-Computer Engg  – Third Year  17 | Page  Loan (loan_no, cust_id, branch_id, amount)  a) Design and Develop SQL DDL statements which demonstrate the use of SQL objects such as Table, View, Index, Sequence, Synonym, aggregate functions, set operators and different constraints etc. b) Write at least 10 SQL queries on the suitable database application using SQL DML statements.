@@ -1,0 +1,237 @@
+
+Step1:- TABLES AND CONSTRAINTS
+
+CREATE TABLE Customer (
+    cust_id   NUMBER(5),
+    cust_name VARCHAR2(50) NOT NULL,
+    city      VARCHAR2(40) NOT NULL,
+    phone     VARCHAR2(15) UNIQUE,
+    CONSTRAINT pk_customer PRIMARY KEY (cust_id)
+);
+
+CREATE TABLE Branch (
+    branch_id   NUMBER(5),
+    branch_name VARCHAR2(50) NOT NULL,
+    branch_city VARCHAR2(40) NOT NULL,
+    CONSTRAINT pk_branch PRIMARY KEY (branch_id)
+);
+
+CREATE TABLE Account (
+    acc_no    NUMBER(10),
+    cust_id   NUMBER(5) NOT NULL,
+    branch_id NUMBER(5) NOT NULL,
+    balance   NUMBER(12,2) DEFAULT 0 NOT NULL,
+    CONSTRAINT pk_account PRIMARY KEY (acc_no),
+    CONSTRAINT fk_account_customer FOREIGN KEY (cust_id)
+        REFERENCES Customer(cust_id),
+    CONSTRAINT fk_account_branch FOREIGN KEY (branch_id)
+        REFERENCES Branch(branch_id),
+    CONSTRAINT chk_account_balance CHECK (balance >= 0)
+);
+
+CREATE TABLE Loan (
+    loan_no   NUMBER(10),
+    cust_id   NUMBER(5) NOT NULL,
+    branch_id NUMBER(5) NOT NULL,
+    amount    NUMBER(12,2) NOT NULL,
+    CONSTRAINT pk_loan PRIMARY KEY (loan_no),
+    CONSTRAINT fk_loan_customer FOREIGN KEY (cust_id)
+        REFERENCES Customer(cust_id),
+    CONSTRAINT fk_loan_branch FOREIGN KEY (branch_id)
+        REFERENCES Branch(branch_id),
+    CONSTRAINT chk_loan_amount CHECK (amount > 0)
+);
+
+Step2:- INSERT SAMPLE RECORDS (10 records in each table)
+
+INSERT INTO Customer VALUES (1, 'Aarav Sharma', 'Pune', '9876500001');
+INSERT INTO Customer VALUES (2, 'Priya Patil', 'Mumbai', '9876500002');
+INSERT INTO Customer VALUES (3, 'Rohan Deshmukh', 'Nashik', '9876500003');
+INSERT INTO Customer VALUES (4, 'Sneha Kulkarni', 'Pune', '9876500004');
+INSERT INTO Customer VALUES (5, 'Aditya Joshi', 'Nagpur', '9876500005');
+INSERT INTO Customer VALUES (6, 'Neha Shah', 'Mumbai', '9876500006');
+INSERT INTO Customer VALUES (7, 'Ishaan More', 'Kolhapur', '9876500007');
+INSERT INTO Customer VALUES (8, 'Ananya Gupta', 'Pune', '9876500008');
+INSERT INTO Customer VALUES (9, 'Omkar Jadhav', 'Nashik', '9876500009');
+INSERT INTO Customer VALUES (10, 'Kavya Rao', 'Nagpur', '9876500010');
+
+INSERT INTO Branch VALUES (101, 'FC Road Branch', 'Pune');
+INSERT INTO Branch VALUES (102, 'Andheri Branch', 'Mumbai');
+INSERT INTO Branch VALUES (103, 'College Road Branch', 'Nashik');
+INSERT INTO Branch VALUES (104, 'Sitabuldi Branch', 'Nagpur');
+INSERT INTO Branch VALUES (105, 'Rajarampuri Branch', 'Kolhapur');
+INSERT INTO Branch VALUES (106, 'Kothrud Branch', 'Pune');
+INSERT INTO Branch VALUES (107, 'Thane Branch', 'Mumbai');
+INSERT INTO Branch VALUES (108, 'Gangapur Road Branch', 'Nashik');
+INSERT INTO Branch VALUES (109, 'Dharampeth Branch', 'Nagpur');
+INSERT INTO Branch VALUES (110, 'Baner Branch', 'Pune');
+
+INSERT INTO Account VALUES (10001, 1, 101, 55000);
+INSERT INTO Account VALUES (10002, 2, 102, 72000);
+INSERT INTO Account VALUES (10003, 3, 103, 35000);
+INSERT INTO Account VALUES (10004, 4, 106, 91000);
+INSERT INTO Account VALUES (10005, 5, 104, 48000);
+INSERT INTO Account VALUES (10006, 6, 107, 125000);
+INSERT INTO Account VALUES (10007, 7, 105, 27000);
+INSERT INTO Account VALUES (10008, 8, 110, 83000);
+INSERT INTO Account VALUES (10009, 9, 108, 64000);
+INSERT INTO Account VALUES (10010, 10, 109, 105000);
+
+INSERT INTO Loan VALUES (50001, 1, 101, 200000);
+INSERT INTO Loan VALUES (50002, 2, 102, 350000);
+INSERT INTO Loan VALUES (50003, 3, 103, 150000);
+INSERT INTO Loan VALUES (50004, 4, 106, 500000);
+INSERT INTO Loan VALUES (50005, 5, 104, 250000);
+INSERT INTO Loan VALUES (50006, 6, 107, 600000);
+INSERT INTO Loan VALUES (50007, 7, 105, 100000);
+INSERT INTO Loan VALUES (50008, 8, 110, 450000);
+INSERT INTO Loan VALUES (50009, 9, 108, 300000);
+INSERT INTO Loan VALUES (50010, 10, 109, 700000);
+
+COMMIT;
+
+Step3:- VIEW
+
+CREATE OR REPLACE VIEW account_details_v AS
+SELECT a.acc_no, c.cust_name, c.city, b.branch_name, a.balance
+FROM Account a
+JOIN Customer c ON a.cust_id = c.cust_id
+JOIN Branch b ON a.branch_id = b.branch_id;
+
+-- Display view
+SELECT * FROM account_details_v;
+
+Step4:- INDEX
+
+CREATE INDEX idx_customer_city ON Customer(city);
+CREATE INDEX idx_account_balance ON Account(balance);
+
+Step5:- SEQUENCE
+
+CREATE SEQUENCE account_seq
+START WITH 10011
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- Demonstrate sequence (creates one additional account for customer 1)
+
+INSERT INTO Account (acc_no, cust_id, branch_id, balance)
+VALUES (account_seq.NEXTVAL, 1, 101, 15000);
+COMMIT;
+
+Step6:- SYNONYM
+
+CREATE OR REPLACE SYNONYM customer_syn FOR Customer;
+SELECT * FROM customer_syn;
+
+Step7:-  AGGREGATE FUNCTIONS
+
+SELECT COUNT(*) AS total_customers FROM Customer;
+SELECT SUM(balance) AS total_deposits FROM Account;
+SELECT AVG(balance) AS average_balance FROM Account;
+SELECT MAX(balance) AS highest_balance, MIN(balance) AS lowest_balance FROM Account;
+
+-- Aggregate with GROUP BY and HAVING
+
+SELECT b.branch_name, COUNT(a.acc_no) AS account_count,
+       SUM(a.balance) AS branch_total_balance
+FROM Branch b
+LEFT JOIN Account a ON b.branch_id = a.branch_id
+GROUP BY b.branch_name
+HAVING COUNT(a.acc_no) >= 1;
+
+Step8:- SET OPERATORS: UNION, UNION ALL, INTERSECT, MINUS
+
+-- Cities that have customers or bank branches (duplicates removed)
+
+SELECT city AS location FROM Customer
+UNION
+SELECT branch_city AS location FROM Branch;
+
+-- Cities from both tables (duplicates retained)
+
+SELECT city AS location FROM Customer
+UNION ALL
+SELECT branch_city AS location FROM Branch;
+
+-- Cities common to customers and branches
+
+SELECT city AS location FROM Customer
+INTERSECT
+SELECT branch_city AS location FROM Branch;
+
+-- Customer cities that do not appear as branch cities
+
+SELECT city AS location FROM Customer
+MINUS
+SELECT branch_city AS location FROM Branch;
+
+Step9:- DML QUERIES (SELECT, INSERT, UPDATE, DELETE)
+
+-- Query 1: Display all customers
+SELECT * FROM Customer;
+
+-- Query 2: Display customers from Pune
+SELECT * FROM Customer WHERE city = 'Pune';
+
+-- Query 3: Display accounts with balance greater than 60000
+SELECT * FROM Account WHERE balance > 60000;
+
+-- Query 4: Display customer name, account number and balance (INNER JOIN)
+SELECT c.cust_name, a.acc_no, a.balance
+FROM Customer c INNER JOIN Account a ON c.cust_id = a.cust_id;
+
+-- Query 5: Display all customers and their accounts (LEFT JOIN)
+SELECT c.cust_name, a.acc_no, a.balance
+FROM Customer c LEFT JOIN Account a ON c.cust_id = a.cust_id;
+
+-- Query 6: Display branches and accounts (RIGHT JOIN)
+SELECT b.branch_name, a.acc_no, a.balance
+FROM Account a RIGHT JOIN Branch b ON a.branch_id = b.branch_id;
+
+-- Query 7: Display customers who have taken a loan
+SELECT DISTINCT c.cust_id, c.cust_name
+FROM Customer c JOIN Loan l ON c.cust_id = l.cust_id;
+
+-- Query 8: Display loans greater than the average loan amount (subquery)
+SELECT * FROM Loan
+WHERE amount > (SELECT AVG(amount) FROM Loan);
+
+-- Query 9: Display customers whose city is Pune or Mumbai (IN operator)
+SELECT * FROM Customer WHERE city IN ('Pune', 'Mumbai');
+
+-- Query 10: Display customers whose name starts with 'A' (LIKE operator)
+SELECT * FROM Customer WHERE cust_name LIKE 'A%';
+
+-- Query 11: Insert a new customer (INSERT)
+INSERT INTO Customer VALUES (11, 'Rahul Verma', 'Aurangabad', '9876500011');
+
+-- Query 12: Update an account balance (UPDATE)
+UPDATE Account SET balance = balance + 5000 WHERE acc_no = 10001;
+
+-- Query 13: Delete a customer who has no account or loan (DELETE)
+-- Customer 11 has no related account or loan, so this delete is valid.
+DELETE FROM Customer WHERE cust_id = 11;
+
+-- Query 14: Display loan totals by branch (JOIN + GROUP BY)
+SELECT b.branch_name, SUM(l.amount) AS total_loan_amount
+FROM Branch b JOIN Loan l ON b.branch_id = l.branch_id
+GROUP BY b.branch_name;
+
+COMMIT;
+
+-- 10. EXTRA DML EXAMPLES
+-- Add a new loan for an existing customer
+INSERT INTO Loan VALUES (50011, 2, 102, 180000);
+
+-- Increase all account balances below 30000 by 2000
+UPDATE Account SET balance = balance + 2000 WHERE balance < 30000;
+
+-- Verify changes
+SELECT * FROM Account ORDER BY acc_no;
+SELECT * FROM Loan ORDER BY loan_no;
+
+COMMIT;
+
+-- END OF BANKING MANAGEMENT SYSTEM SQL SCRIPT
