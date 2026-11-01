@@ -1,0 +1,96 @@
+Step 1:- Create Library Table
+
+CREATE TABLE Library (
+    book_id INT PRIMARY KEY,
+    book_name VARCHAR(100),
+    author VARCHAR(100),
+    category VARCHAR(50),
+    date DATE,
+    operation VARCHAR(20)
+);
+
+Step 2:-Create Library_Audit Table
+
+CREATE TABLE Library_Audit (
+    book_id INT,
+    book_name VARCHAR(100),
+    author VARCHAR(100),
+    category VARCHAR(50),
+    date DATE,
+    operation VARCHAR(20)
+);
+
+Step 3:- Insert 10 Records
+
+INSERT INTO Library VALUES
+(1, 'Wings of Fire', 'A.P.J. Abdul Kalam', 'Biography', '2024-01-10', 'INSERT'),
+(2, 'Rich Dad Poor Dad', 'Robert Kiyosaki', 'Finance', '2024-02-12', 'INSERT'),
+(3, 'The Alchemist', 'Paulo Coelho', 'Fiction', '2024-03-15', 'INSERT'),
+(4, 'Atomic Habits', 'James Clear', 'Self Help', '2024-04-20', 'INSERT'),
+(5, 'Think Like a Monk', 'Jay Shetty', 'Motivation', '2024-05-18', 'INSERT'),
+(6, 'Harry Potter', 'J.K. Rowling', 'Fantasy', '2024-06-22', 'INSERT'),
+(7, 'The Guide', 'R.K. Narayan', 'Fiction', '2024-07-11', 'INSERT'),
+(8, 'India 2020', 'A.P.J. Abdul Kalam', 'Science', '2024-08-14', 'INSERT'),
+(9, 'The Power of Now', 'Eckhart Tolle', 'Spiritual', '2024-09-19', 'INSERT'),
+(10, 'Ikigai', 'Hector Garcia', 'Self Help', '2024-10-25', 'INSERT');
+
+Step 4:-Create UPDATE Trigger
+
+DELIMITER //
+
+CREATE TRIGGER Library_Update_Trigger
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit
+    VALUES (
+        OLD.book_id,
+        OLD.book_name,
+        OLD.author,
+        OLD.category,
+        OLD.date,
+        'UPDATE'
+    );
+END //
+
+DELIMITER ;
+
+Step 5:-Create DELETE Trigger
+
+DELIMITER //
+
+CREATE TRIGGER Library_Delete_Trigger
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit
+    VALUES (
+        OLD.book_id,
+        OLD.book_name,
+        OLD.author,
+        OLD.category,
+        OLD.date,
+        'DELETE'
+    );
+END //
+
+DELIMITER ;
+
+Step 6:-Test UPDATE Trigger
+
+UPDATE Library
+SET book_name = 'Updated Wings of Fire'
+WHERE book_id = 1;
+
+Step 7:-Test DELETE Trigger
+
+DELETE FROM Library
+WHERE book_id = 2;
+
+Step 8:-Display Library Table
+
+SELECT * FROM Library;
+
+Step 9:-Display Library_Audit Table
+
+SELECT * FROM Library_Audit;
