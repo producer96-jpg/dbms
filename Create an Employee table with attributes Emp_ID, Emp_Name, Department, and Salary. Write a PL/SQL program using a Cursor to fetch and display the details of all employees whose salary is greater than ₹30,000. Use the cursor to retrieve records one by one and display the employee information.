@@ -1,0 +1,59 @@
+Step 1:-Create Employee Table
+
+CREATE TABLE Employee (
+    Emp_ID INT PRIMARY KEY,
+    Emp_Name VARCHAR(50),
+    Department VARCHAR(50),
+    Salary DECIMAL(10,2)
+);
+
+Step 2:-Insert Sample Records
+
+INSERT INTO Employee VALUES
+(101, 'Rahul', 'IT', 45000),
+(102, 'Amit', 'HR', 25000),
+(103, 'Sneha', 'Finance', 50000),
+(104, 'Priya', 'IT', 35000),
+(105, 'Rohan', 'Sales', 28000);
+
+Step 3:-PL/SQL Equivalent in MySQL Using Cursor
+
+DELIMITER //
+
+CREATE PROCEDURE Display_Employees()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE v_ID INT;
+    DECLARE v_Name VARCHAR(50);
+    DECLARE v_Dept VARCHAR(50);
+    DECLARE v_Salary DECIMAL(10,2);
+
+    DECLARE emp_cursor CURSOR FOR
+        SELECT Emp_ID, Emp_Name, Department, Salary
+        FROM Employee
+        WHERE Salary > 30000;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN emp_cursor;
+
+    read_loop: LOOP
+        FETCH emp_cursor INTO v_ID, v_Name, v_Dept, v_Salary;
+
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        SELECT v_ID AS Emp_ID,
+               v_Name AS Emp_Name,
+               v_Dept AS Department,
+               v_Salary AS Salary;
+    END LOOP;
+
+    CLOSE emp_cursor;
+END //
+
+Step 3:- Execute Procedure
+
+CALL Display_Employees();
+DELIMITER ;
