@@ -1,0 +1,156 @@
+Step1:-Create Tables with Primary Key and Foreign Key
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Enrollments (
+    enroll_id INT PRIMARY KEY,
+    student_id INT,
+    course VARCHAR(50),
+    marks INT,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
+);
+
+Step2:-Insert at Least 10 Records
+
+INSERT INTO Students VALUES
+(1, 'Amit', 'Pune'),
+(2, 'Rahul', 'Mumbai'),
+(3, 'Sneha', 'Nashik'),
+(4, 'Priya', 'Pune'),
+(5, 'Rohan', 'Nagpur'),
+(6, 'Neha', 'Mumbai'),
+(7, 'Karan', 'Nashik'),
+(8, 'Pooja', 'Kolhapur'),
+(9, 'Akash', 'Pune'),
+(10, 'Sakshi', 'Satara');
+
+
+INSERT INTO Enrollments VALUES
+(101, 1, 'DBMS', 85),
+(102, 2, 'Python', 78),
+(103, 3, 'Java', 90),
+(104, 4, 'DBMS', 88),
+(105, 5, 'Python', 65),
+(106, 6, 'Java', 72),
+(107, 7, 'DBMS', 95),
+(108, 8, 'Python', 80),
+(109, 1, 'Java', 92),
+(110, 3, 'DBMS', 87);
+
+Step3:-DML Operations
+
+INSERT INTO Students
+VALUES (11, 'Vikas', 'Thane');
+
+UPDATE Students
+SET city = 'Mumbai'
+WHERE student_id = 11;
+
+DELETE FROM Students
+WHERE student_id = 11;
+
+SELECT * FROM Students;
+
+SELECT * FROM Enrollments;
+
+UPDATE Enrollments
+SET marks = 95
+WHERE enroll_id = 101;
+
+
+Step4:-. SQL Joins
+
+1. INNER JOIN
+SELECT Students.student_id, Students.name,
+       Enrollments.course, Enrollments.marks
+FROM Students
+INNER JOIN Enrollments
+ON Students.student_id = Enrollments.student_id;
+
+2. LEFT JOIN
+SELECT Students.name, Enrollments.course,
+       Enrollments.marks
+FROM Students
+LEFT JOIN Enrollments
+ON Students.student_id = Enrollments.student_id;
+
+3. RIGHT JOIN
+SELECT Students.name, Enrollments.course,
+       Enrollments.marks
+FROM Students
+RIGHT JOIN Enrollments
+ON Students.student_id = Enrollments.student_id;
+
+4. CROSS JOIN
+SELECT Students.name, Enrollments.course
+FROM Students
+CROSS JOIN Enrollments;
+
+5. FULL OUTER JOIN (Using UNION)
+SELECT Students.student_id, Students.name,
+       Enrollments.course
+FROM Students
+LEFT JOIN Enrollments
+ON Students.student_id = Enrollments.student_id
+
+UNION
+
+SELECT Students.student_id, Students.name,
+       Enrollments.course
+FROM Students
+RIGHT JOIN Enrollments
+ON Students.student_id = Enrollments.student_id;
+
+Step5:-SQL Subqueries
+
+1. Find students who scored more than 80 marks.
+SELECT name
+FROM Students
+WHERE student_id IN (
+    SELECT student_id
+    FROM Enrollments
+    WHERE marks > 80
+);
+
+2. Find students who scored above average marks.
+SELECT *
+FROM Enrollments
+WHERE marks > (
+    SELECT AVG(marks)
+    FROM Enrollments
+);
+
+3. Find students enrolled in DBMS course.
+SELECT *
+FROM Students
+WHERE student_id IN (
+    SELECT student_id
+    FROM Enrollments
+    WHERE course = 'DBMS'
+);
+
+4. Find students who scored the highest marks.
+SELECT *
+FROM Enrollments
+WHERE marks = (
+    SELECT MAX(marks)
+    FROM Enrollments
+);
+
+5. Find students from Pune city who are enrolled in a course.
+SELECT *
+FROM Students
+WHERE city = 'Pune'
+AND student_id IN (
+    SELECT student_id
+    FROM Enrollments
+);
+
+7. Additional SQL Queries
+
+1. Display students in ascending order of names.
+SELECT * FROM Students
+ORDER BY name ASC;
