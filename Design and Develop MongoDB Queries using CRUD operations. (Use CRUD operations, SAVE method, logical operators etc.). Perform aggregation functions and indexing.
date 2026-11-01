@@ -1,0 +1,78 @@
+Step1:- Create a Database and Collection
+
+CREATE DATABASE CollegeDB;
+use CollegeDB
+db.createCollection("Student")
+
+Step3:-Insert Documents (CREATE)
+db.Student.insertMany([
+  {
+    RollNo: 1,
+    Name: "Rahul",
+    Department: "Computer",
+    Age: 21,
+    Marks: 85,
+    City: "Pune"
+  },
+  {
+    RollNo: 2,
+    Name: "Amit",
+    Department: "IT",
+    Age: 22,
+    Marks: 75,
+    City: "Mumbai"
+  },
+  {
+    RollNo: 3,
+    Name: "Priya",
+    Department: "Computer",
+    Age: 20,
+    Marks: 90,
+    City: "Pune"
+  },
+  {
+    RollNo: 4
+    Name: "Sneha",
+    Department: "IT",
+    Age: 21,
+    Marks: 65,
+    City: "Nashik"
+  },
+  {
+    RollNo: 5,
+    Name: "Rohit",
+    Department: "Mechanical",
+    Age: 23,
+    Marks: 80,
+    City: "Pune"
+  }
+])
+
+Step4:-Display all student records
+db.Student.find()
+db.Student.find().pretty()
+
+Step5:-Update Operations (UPDATE)
+db.Student.updateOne(
+  {RollNo: 1},
+  {$set: {Marks: 95}}
+)
+
+db.Student.updateMany(
+  {Department: "IT"},
+  {$set: {City: "Pune"}}
+)
+
+Step6:-Delete Operations (DELETE)
+
+db.Student.deleteOne({RollNo: 5})
+
+Step7:-Logical Operators
+
+AND OPERATOR
+db.Student.find({
+  $and: [
+    {Department: "Computer"},
+    {Marks: {$gt: 80}}
+  ]
+})
