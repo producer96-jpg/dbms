@@ -4,7 +4,7 @@ CREATE TABLE Students (
     name VARCHAR(50),
     city VARCHAR(50)
 );
-
+ 
 CREATE TABLE Enrollments (
     enroll_id INT PRIMARY KEY,
     student_id INT,
