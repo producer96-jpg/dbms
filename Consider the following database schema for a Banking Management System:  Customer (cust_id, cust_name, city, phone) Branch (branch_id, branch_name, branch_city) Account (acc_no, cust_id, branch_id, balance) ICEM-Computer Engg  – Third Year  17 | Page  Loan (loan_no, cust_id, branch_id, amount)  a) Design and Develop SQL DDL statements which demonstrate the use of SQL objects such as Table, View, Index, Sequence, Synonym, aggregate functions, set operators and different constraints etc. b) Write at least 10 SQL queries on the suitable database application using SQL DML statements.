@@ -1,6 +1,6 @@
 
 Step1:- TABLES AND CONSTRAINTS
-
+ 
 CREATE TABLE Customer (
     cust_id   NUMBER(5),
     cust_name VARCHAR2(50) NOT NULL,
