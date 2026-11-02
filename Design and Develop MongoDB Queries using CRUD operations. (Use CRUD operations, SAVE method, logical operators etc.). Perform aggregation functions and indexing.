@@ -1,3 +1,5 @@
+To start mogo db use mongosh in terminal 
+
 Step1:- Create a Database and Collection
 
 CREATE DATABASE CollegeDB;
@@ -76,3 +78,20 @@ db.Student.find({
     {Marks: {$gt: 80}}
   ]
 })
+
+NOT Operator:
+db.Student.find({
+  Marks: {$not: {$gt: 80}}
+})
+
+Step8:-. Indexing
+db.Student.createIndex({Name: 1})
+
+Step8:- Aggregation Functions
+1. Count
+db.Student.countDocuments()
+
+2. Sum:
+db.Student.aggregate([
+  {$group: {_id: null, TotalMarks: {$sum: "$Marks"}}}
+])
