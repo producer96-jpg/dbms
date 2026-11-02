@@ -1,0 +1,89 @@
+Step1:- Create Database
+
+CREATE DATABASE StudentDB;
+USE StudentDB;
+
+Step2:-Create Tables
+
+CREATE TABLE Stud_Marks (
+    name VARCHAR(50),
+    total_marks INT
+);
+
+CREATE TABLE Result (
+    Roll INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Class VARCHAR(30)
+);
+
+Step3:-Insert 10 Records
+
+INSERT INTO Stud_Marks VALUES
+('Rahul', 1450),
+('Amit', 1200),
+('Priya', 1000),
+('Sneha', 950),
+('Rohit', 920),
+('Neha', 880),
+('Pooja', 850),
+('Karan', 800),
+('Anjali', 750),
+('Sahil', 600);
+
+Step4:-Create Stored Procedure proc_Grade
+
+DELIMITER //
+
+CREATE PROCEDURE proc_Grade()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE s_name VARCHAR(50);
+    DECLARE marks INT;
+    DECLARE roll_no INT DEFAULT 1;
+    DECLARE grade VARCHAR(30);
+
+    DECLARE cur CURSOR FOR
+        SELECT name, total_marks FROM Stud_Marks;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+        SET done = 1;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO s_name, marks;
+
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF marks >= 990 AND marks <= 1500 THEN
+            SET grade = 'Distinction';
+
+        ELSEIF marks >= 900 AND marks <= 989 THEN
+            SET grade = 'First Class';
+
+        ELSEIF marks >= 825 AND marks <= 899 THEN
+            SET grade = 'Higher Second Class';
+
+        ELSE
+            SET grade = 'Pass Class';
+        END IF;
+
+        INSERT INTO Result (Roll, Name, Class)
+        VALUES (roll_no, s_name, grade);
+
+        SET roll_no = roll_no + 1;
+
+    END LOOP;
+
+    CLOSE cur;
+END //
+
+DELIMITER ;
+
+Step5:-Execute Stored Procedure
+CALL proc_Grade();
+
+Step6:-Display Result Table
+SELECT * FROM Result;
