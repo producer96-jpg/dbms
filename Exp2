@@ -3,53 +3,16 @@ CREATE DATABASE IF NOT EXISTS Banking_DB;
 USE Banking_DB;
 
 -- Customer Table
-CREATE TABLE Customer (
-    cust_id INT PRIMARY KEY,
-    cust_name VARCHAR(50) NOT NULL,
-    city VARCHAR(40) NOT NULL,
-    phone VARCHAR(15) UNIQUE
-);
-
+CREATE TABLE Customer ( cust_id INT PRIMARY KEY,  cust_name VARCHAR(50) NOT NULL,  city VARCHAR(40) NOT NULL,  phone VARCHAR(15) UNIQUE );
+   
 -- Branch Table
-CREATE TABLE Branch (
-    branch_id INT PRIMARY KEY,
-    branch_name VARCHAR(50) NOT NULL,
-    branch_city VARCHAR(40) NOT NULL
-);
-
+CREATE TABLE Branch (  branch_id INT PRIMARY KEY, branch_name VARCHAR(50) NOT NULL,  branch_city VARCHAR(40) NOT NULL);
+  
 -- Account Table
-CREATE TABLE Account (
-    acc_no BIGINT PRIMARY KEY,
-    cust_id INT NOT NULL,
-    branch_id INT NOT NULL,
-    balance DECIMAL(12,2) DEFAULT 0 NOT NULL,
-
-    CONSTRAINT fk_account_customer
-        FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
-
-    CONSTRAINT fk_account_branch
-        FOREIGN KEY (branch_id) REFERENCES Branch(branch_id),
-
-    CONSTRAINT chk_account_balance
-        CHECK (balance >= 0)
-);
-
+CREATE TABLE Account ( acc_no BIGINT PRIMARY KEY,   cust_id INT NOT NULL, branch_id INT NOT NULL, balance DECIMAL(12,2) DEFAULT 0 NOT NULL, CONSTRAINT fk_account_customer FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),  FOREIGN KEY (branch_id) REFERENCES Branch(branch_id), CONSTRAINT chk_account_balance CHECK (balance >= 0) );
+  
 -- Loan Table
-CREATE TABLE Loan (
-    loan_no BIGINT PRIMARY KEY,
-    cust_id INT NOT NULL,
-    branch_id INT NOT NULL,
-    amount DECIMAL(12,2) NOT NULL,
-
-    CONSTRAINT fk_loan_customer
-        FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
-
-    CONSTRAINT fk_loan_branch
-        FOREIGN KEY (branch_id) REFERENCES Branch(branch_id),
-
-    CONSTRAINT chk_loan_amount
-        CHECK (amount > 0)
-);
+CREATE TABLE Loan ( loan_no BIGINT PRIMARY KEY, cust_id INT NOT NULL, branch_id INT NOT NULL, amount DECIMAL(12,2) NOT NULL,CONSTRAINT fk_loan_customer  FOREIGN KEY (cust_id) REFERENCES Customer(cust_id), CONSTRAINT fk_loan_branch  FOREIGN KEY (branch_id) REFERENCES Branch(branch_id),CONSTRAINT chk_loan_amount CHECK (amount > 0) );
 
 Step2:- INSERT SAMPLE RECORDS (10 records in each table)
 
