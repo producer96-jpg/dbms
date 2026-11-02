@@ -6,7 +6,6 @@ CREATE DATABASE CollegeDB;
 use CollegeDB
 db.createCollection("Student")
 
-Step3:-Insert Documents (CREATE)
 db.Student.insertMany([
   {
     RollNo: 1,
@@ -33,7 +32,7 @@ db.Student.insertMany([
     City: "Pune"
   },
   {
-    RollNo: 4
+    RollNo: 4,
     Name: "Sneha",
     Department: "IT",
     Age: 21,
@@ -48,7 +47,7 @@ db.Student.insertMany([
     Marks: 80,
     City: "Pune"
   }
-])
+]);
 
 Step4:-Display all student records
 db.Student.find()
@@ -70,16 +69,17 @@ Step6:-Delete Operations (DELETE)
 db.Student.deleteOne({RollNo: 5})
 
 Step7:-Logical Operators
+And operator
 
-AND OPERATOR
 db.Student.find({
-  $and: [
-    {Department: "Computer"},
-    {Marks: {$gt: 80}}
-  ]
-})
+    $and: [
+        { Department: "Computer" },
+        { Marks: { $gt: 80 } }
+    ]
+});
 
 NOT Operator:
+
 db.Student.find({
   Marks: {$not: {$gt: 80}}
 })
