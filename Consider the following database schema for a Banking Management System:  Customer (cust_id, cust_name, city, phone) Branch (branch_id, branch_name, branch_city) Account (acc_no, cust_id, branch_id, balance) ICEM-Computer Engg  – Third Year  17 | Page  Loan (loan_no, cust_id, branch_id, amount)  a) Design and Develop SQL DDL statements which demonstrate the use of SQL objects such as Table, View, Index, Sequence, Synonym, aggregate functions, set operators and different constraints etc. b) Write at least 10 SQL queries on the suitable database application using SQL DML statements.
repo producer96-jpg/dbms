@@ -170,51 +170,64 @@ SELECT branch_city AS location FROM Branch;
 Step9:- DML QUERIES (SELECT, INSERT, UPDATE, DELETE)
 
 -- Query 1: Display all customers
+
 SELECT * FROM Customer;
 
 -- Query 2: Display customers from Pune
+
 SELECT * FROM Customer WHERE city = 'Pune';
 
 -- Query 3: Display accounts with balance greater than 60000
+
 SELECT * FROM Account WHERE balance > 60000;
 
 -- Query 4: Display customer name, account number and balance (INNER JOIN)
+
 SELECT c.cust_name, a.acc_no, a.balance
 FROM Customer c INNER JOIN Account a ON c.cust_id = a.cust_id;
 
 -- Query 5: Display all customers and their accounts (LEFT JOIN)
+
 SELECT c.cust_name, a.acc_no, a.balance
 FROM Customer c LEFT JOIN Account a ON c.cust_id = a.cust_id;
 
 -- Query 6: Display branches and accounts (RIGHT JOIN)
+
 SELECT b.branch_name, a.acc_no, a.balance
 FROM Account a RIGHT JOIN Branch b ON a.branch_id = b.branch_id;
 
 -- Query 7: Display customers who have taken a loan
+
 SELECT DISTINCT c.cust_id, c.cust_name
 FROM Customer c JOIN Loan l ON c.cust_id = l.cust_id;
 
 -- Query 8: Display loans greater than the average loan amount (subquery)
+
 SELECT * FROM Loan
 WHERE amount > (SELECT AVG(amount) FROM Loan);
 
 -- Query 9: Display customers whose city is Pune or Mumbai (IN operator)
+
 SELECT * FROM Customer WHERE city IN ('Pune', 'Mumbai');
 
 -- Query 10: Display customers whose name starts with 'A' (LIKE operator)
+
 SELECT * FROM Customer WHERE cust_name LIKE 'A%';
 
 -- Query 11: Insert a new customer (INSERT)
+
 INSERT INTO Customer VALUES (11, 'Rahul Verma', 'Aurangabad', '9876500011');
 
 -- Query 12: Update an account balance (UPDATE)
+
 UPDATE Account SET balance = balance + 5000 WHERE acc_no = 10001;
 
 -- Query 13: Delete a customer who has no account or loan (DELETE)
--- Customer 11 has no related account or loan, so this delete is valid.
+
 DELETE FROM Customer WHERE cust_id = 11;
 
 -- Query 14: Display loan totals by branch (JOIN + GROUP BY)
+
 SELECT b.branch_name, SUM(l.amount) AS total_loan_amount
 FROM Branch b JOIN Loan l ON b.branch_id = l.branch_id
 GROUP BY b.branch_name;
