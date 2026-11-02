@@ -1,45 +1,54 @@
 
-Step1:- TABLES AND CONSTRAINTS
- 
+CREATE DATABASE IF NOT EXISTS Banking_DB;
+USE Banking_DB;
+
+-- Customer Table
 CREATE TABLE Customer (
-    cust_id   NUMBER(5),
-    cust_name VARCHAR2(50) NOT NULL,
-    city      VARCHAR2(40) NOT NULL,
-    phone     VARCHAR2(15) UNIQUE,
-    CONSTRAINT pk_customer PRIMARY KEY (cust_id)
+    cust_id INT PRIMARY KEY,
+    cust_name VARCHAR(50) NOT NULL,
+    city VARCHAR(40) NOT NULL,
+    phone VARCHAR(15) UNIQUE
 );
 
+-- Branch Table
 CREATE TABLE Branch (
-    branch_id   NUMBER(5),
-    branch_name VARCHAR2(50) NOT NULL,
-    branch_city VARCHAR2(40) NOT NULL,
-    CONSTRAINT pk_branch PRIMARY KEY (branch_id)
+    branch_id INT PRIMARY KEY,
+    branch_name VARCHAR(50) NOT NULL,
+    branch_city VARCHAR(40) NOT NULL
 );
 
+-- Account Table
 CREATE TABLE Account (
-    acc_no    NUMBER(10),
-    cust_id   NUMBER(5) NOT NULL,
-    branch_id NUMBER(5) NOT NULL,
-    balance   NUMBER(12,2) DEFAULT 0 NOT NULL,
-    CONSTRAINT pk_account PRIMARY KEY (acc_no),
-    CONSTRAINT fk_account_customer FOREIGN KEY (cust_id)
-        REFERENCES Customer(cust_id),
-    CONSTRAINT fk_account_branch FOREIGN KEY (branch_id)
-        REFERENCES Branch(branch_id),
-    CONSTRAINT chk_account_balance CHECK (balance >= 0)
+    acc_no BIGINT PRIMARY KEY,
+    cust_id INT NOT NULL,
+    branch_id INT NOT NULL,
+    balance DECIMAL(12,2) DEFAULT 0 NOT NULL,
+
+    CONSTRAINT fk_account_customer
+        FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
+
+    CONSTRAINT fk_account_branch
+        FOREIGN KEY (branch_id) REFERENCES Branch(branch_id),
+
+    CONSTRAINT chk_account_balance
+        CHECK (balance >= 0)
 );
 
+-- Loan Table
 CREATE TABLE Loan (
-    loan_no   NUMBER(10),
-    cust_id   NUMBER(5) NOT NULL,
-    branch_id NUMBER(5) NOT NULL,
-    amount    NUMBER(12,2) NOT NULL,
-    CONSTRAINT pk_loan PRIMARY KEY (loan_no),
-    CONSTRAINT fk_loan_customer FOREIGN KEY (cust_id)
-        REFERENCES Customer(cust_id),
-    CONSTRAINT fk_loan_branch FOREIGN KEY (branch_id)
-        REFERENCES Branch(branch_id),
-    CONSTRAINT chk_loan_amount CHECK (amount > 0)
+    loan_no BIGINT PRIMARY KEY,
+    cust_id INT NOT NULL,
+    branch_id INT NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+
+    CONSTRAINT fk_loan_customer
+        FOREIGN KEY (cust_id) REFERENCES Customer(cust_id),
+
+    CONSTRAINT fk_loan_branch
+        FOREIGN KEY (branch_id) REFERENCES Branch(branch_id),
+
+    CONSTRAINT chk_loan_amount
+        CHECK (amount > 0)
 );
 
 Step2:- INSERT SAMPLE RECORDS (10 records in each table)
@@ -66,7 +75,7 @@ INSERT INTO Branch VALUES (101, 'FC Road Branch', 'Pune'),
  (109, 'Dharampeth Branch', 'Nagpur'),
  (110, 'Baner Branch', 'Pune');
 
-INSERT INTO Account VALUES (10001, 1, 101, 55000);
+INSERT INTO Account VALUES (10001, 1, 101, 55000),
  (10002, 2, 102, 72000),
  (10003, 3, 103, 35000),
  (10004, 4, 106, 91000),
@@ -106,24 +115,6 @@ Step4:- INDEX
 CREATE INDEX idx_customer_city ON Customer(city);
 CREATE INDEX idx_account_balance ON Account(balance);
 
-Step5:- SEQUENCE
-
-CREATE SEQUENCE account_seq
-START WITH 10011
-INCREMENT BY 1
-NOCACHE
-NOCYCLE;
-
--- Demonstrate sequence (creates one additional account for customer 1)
-
-INSERT INTO Account (acc_no, cust_id, branch_id, balance)
-VALUES (account_seq.NEXTVAL, 1, 101, 15000);
-COMMIT;
-
-Step6:- SYNONYM
-
-CREATE OR REPLACE SYNONYM customer_syn FOR Customer;
-SELECT * FROM customer_syn;
 
 Step7:-  AGGREGATE FUNCTIONS
 
@@ -161,16 +152,10 @@ SELECT city AS location FROM Customer
 INTERSECT
 SELECT branch_city AS location FROM Branch;
 
--- Customer cities that do not appear as branch cities
-
-SELECT city AS location FROM Customer
-MINUS
-SELECT branch_city AS location FROM Branch;
-
 Step9:- DML QUERIES (SELECT, INSERT, UPDATE, DELETE)
 
 -- Query 1: Display all customers
-
+ 
 SELECT * FROM Customer;
 
 -- Query 2: Display customers from Pune
@@ -231,15 +216,6 @@ DELETE FROM Customer WHERE cust_id = 11;
 SELECT b.branch_name, SUM(l.amount) AS total_loan_amount
 FROM Branch b JOIN Loan l ON b.branch_id = l.branch_id
 GROUP BY b.branch_name;
-
-COMMIT;
-
--- 10. EXTRA DML EXAMPLES
--- Add a new loan for an existing customer
-INSERT INTO Loan VALUES (50011, 2, 102, 180000);
-
--- Increase all account balances below 30000 by 2000
-UPDATE Account SET balance = balance + 2000 WHERE balance < 30000;
 
 -- Verify changes
 SELECT * FROM Account ORDER BY acc_no;
